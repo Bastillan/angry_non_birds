@@ -1,73 +1,78 @@
 import pygame
 import pymunk
-import sys
+import pymunk.pygame_util
+import math
+
+pygame.init()
+
+WIDTH, HEIGHT = 1000, 800
+window = pygame.display.set_mode((WIDTH, HEIGHT))
 
 
-class GameState():
-    def __init__(self) -> None:
-        self._state = 'intro'
-
-    @property
-    def state(self):
-        return self._state
-
-    def intro(self):
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                self._state = 'first_level'
-
-        screen.fill((255, 0, 0))
-        pygame.display.flip()
-
-    def first_level(self):
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-
-        screen.fill((255, 255, 255))
-        draw_ball(ball)
-        space.step(1/50)
-        pygame.display.update()
-
-    def state_manager(self):
-        if self.state == 'intro':
-            self.intro()
-        if self.state == 'first_level':
-            self.first_level()
+def draw(window, space, draw_options):
+    window.fill('white')
+    space.debug_draw(draw_options)
+    pygame.display.update()
 
 
-def create_ball(space):
-    body = pymunk.Body(1, 100, body_type=pymunk.Body.DYNAMIC)
-    body.position = (400, 0)
-    shape = pymunk.Circle(body, 80)
+def create_ball(space, radius, mass):
+    body = pymunk.Body()
+    body.position = (300, 300)
+    shape = pymunk.Circle(body, radius)
+    shape.mass = mass
+    shape.elasticity = 0.9
+    shape.friction = 0.4
+    shape.color = (255, 0, 0, 100)
     space.add(body, shape)
     return shape
 
 
-def draw_ball(ball):
-    pos_x = int(ball.body.position.x)
-    pos_y = int(ball.body.position.y)
-    pygame.draw.circle(screen, (0, 0, 0), (pos_x, pos_y), 80)
+def create_boundries(space, width, height):
+    rects = [
+        [(width/2, height - 10), (width, 20)],
+        [(width/2, 10), (width, 20)],
+        [(10, height/2), (20, height)],
+        [(width - 10, height/2), (20, height)]
+    ]
+
+    for pos, size in rects:
+        body = pymunk.Body(body_type=pymunk.Body.STATIC)
+        body.position = pos
+        shape = pymunk.Poly.create_box(body, size)
+        shape.elasticity = 0.4
+        shape.friction = 0.5
+        space.add(body, shape)
 
 
-# General setup
-pygame.init()
-clock = pygame.time.Clock()
-game_state = GameState()
+def run(window, width, height):
+    run = True
+    clock = pygame.time.Clock()
+    fps = 60
+    dt = 1 / fps
 
-# Create the display surface
-screen_width = 1600
-screen_height = 800
-screen = pygame.display.set_mode((screen_width, screen_height))
+    space = pymunk.Space()
+    space.gravity = (0, 981)
 
-space = pymunk.Space()
-space.gravity = (0, 500)
-ball = create_ball(space)
+    ball = create_ball(space, 30, 10)
+    create_boundries(space, WIDTH, HEIGHT)
 
-while True:
-    game_state.state_manager()
-    clock.tick(60)
+    draw_options = pymunk.pygame_util.DrawOptions(window)
+
+    while run:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+                break
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                ball.body.apply_impulse_at_local_point((10000, 0), (0, 0))
+
+        draw(window, space, draw_options)
+        space.step(dt)
+        clock.tick(fps)
+
+    pygame.quit()
+
+
+if __name__ == '__main__':
+    run(window, WIDTH, HEIGHT)
