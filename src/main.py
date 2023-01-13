@@ -9,15 +9,28 @@ WIDTH, HEIGHT = 1000, 800
 window = pygame.display.set_mode((WIDTH, HEIGHT))
 
 
-def draw(window, space, draw_options):
+def calculate_distance(p1, p2):
+    return math.sqrt((p2[1] - p1[1])**2 + (p2[0] - p1[0])**2)
+
+
+def calculate_angle(p1, p2):
+    return math.atan2(p2[1] - p1[1], p2[0] - p1[0])
+
+
+def draw(window, space, draw_options, line):
     window.fill('white')
+
+    if line:
+        pygame.draw.line(window, 'black', line[0], line[1], 3)
+
     space.debug_draw(draw_options)
+
     pygame.display.update()
 
 
-def create_ball(space, radius, mass):
-    body = pymunk.Body()
-    body.position = (300, 300)
+def create_ball(space, radius, mass, pos):
+    body = pymunk.Body(body_type=pymunk.Body.STATIC)
+    body.position = pos
     shape = pymunk.Circle(body, radius)
     shape.mass = mass
     shape.elasticity = 0.9
@@ -44,6 +57,25 @@ def create_boundries(space, width, height):
         space.add(body, shape)
 
 
+def create_structure(space, width, height):
+    BROWN = (139, 69, 19, 100)
+    rects = [
+        [(600, height - 120), (40, 200), BROWN, 100],
+        [(900, height - 120), (40, 200), BROWN, 100],
+        [(750, height - 240), (340, 40), BROWN, 150]
+    ]
+
+    for pos, size, color, mass in rects:
+        body = pymunk.Body()
+        body.position = pos
+        shape = pymunk.Poly.create_box(body, size, radius=1)
+        shape.color = color
+        shape.mass = mass
+        shape.elasticity = 0.4
+        shape.friction = 0.4
+        space.add(body, shape)
+
+
 def run(window, width, height):
     run = True
     clock = pygame.time.Clock()
@@ -53,21 +85,41 @@ def run(window, width, height):
     space = pymunk.Space()
     space.gravity = (0, 981)
 
-    ball = create_ball(space, 30, 10)
-    create_boundries(space, WIDTH, HEIGHT)
+    create_boundries(space, width, height)
+    create_structure(space, width, height)
 
     draw_options = pymunk.pygame_util.DrawOptions(window)
 
+    pressed_pos = None
+    ball = None
+
     while run:
+        line = None
+        if ball and pressed_pos:
+            line = [pressed_pos, pygame.mouse.get_pos()]
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
                 break
 
             if event.type == pygame.MOUSEBUTTONDOWN:
-                ball.body.apply_impulse_at_local_point((10000, 0), (0, 0))
+                if not ball:
+                    pressed_pos = pygame.mouse.get_pos()
+                    ball = create_ball(space, 30, 10, pressed_pos)
+                elif pressed_pos:
+                    ball.body.body_type = pymunk.Body.DYNAMIC
+                    angle = calculate_angle(*line)
+                    force = calculate_distance(*line) * 50
+                    fx = math.cos(angle) * force
+                    fy = math.sin(angle) * force
+                    ball.body.apply_impulse_at_local_point((fx, fy), (0, 0))
+                    pressed_pos = None
+                else:
+                    space.remove(ball, ball.body)
+                    ball = None
 
-        draw(window, space, draw_options)
+        draw(window, space, draw_options, line)
         space.step(dt)
         clock.tick(fps)
 
