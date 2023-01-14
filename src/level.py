@@ -1,6 +1,7 @@
 import pygame
 import pymunk
 import pymunk.pygame_util
+import math
 
 
 class Level:
@@ -17,8 +18,14 @@ class Level:
         self.ball = None
         self.tries = 1
 
-    def draw(self):
+    def draw(self, line):
         self.window.fill(self.wall_color)
+
+        if line:
+            pygame.draw.line(self.window, 'black', line[0], line[1], 3)
+
+        self.space.debug_draw(self.draw_options)
+
         pygame.display.update()
 
     def action(self, event: pygame.event.Event, line):  # : list[tuple(int, int)]
@@ -27,3 +34,9 @@ class Level:
                 return 'next_level'
             self.tries -= 1
         return 'level'
+
+    def calculate_distance(self, p1, p2):
+        return math.sqrt((p2[1]-p1[1])**2 + (p2[0]-p1[0])**2)
+
+    def calculate_angle(self, p1, p2):
+        return math.atan2(p2[1] - p1[1], p2[0] - p1[0])

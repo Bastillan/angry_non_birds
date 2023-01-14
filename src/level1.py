@@ -58,22 +58,6 @@ class Level1(Level):
         self.space.add(body, shape)
         return shape
 
-    def draw(self, line):
-        self.window.fill(self.wall_color)
-
-        if line:
-            pygame.draw.line(self.window, 'black', line[0], line[1], 3)
-
-        self.space.debug_draw(self.draw_options)
-
-        pygame.display.update()
-
-    def calculate_distance(self, p1, p2):
-        return math.sqrt((p2[1]-p1[1])**2 + (p2[0]-p1[0])**2)
-
-    def calculate_angle(self, p1, p2):
-        return math.atan2(p2[1] - p1[1], p2[0] - p1[0])
-
     def action(self, event: pygame.event.Event, line):
         if self.tries < 1:
             return 'credits'
