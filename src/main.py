@@ -2,11 +2,7 @@ import pygame
 import pymunk
 import pymunk.pygame_util
 import math
-
-pygame.init()
-
-WIDTH, HEIGHT = 1000, 800
-window = pygame.display.set_mode((WIDTH, HEIGHT))
+import sys
 
 
 def calculate_distance(p1, p2):
@@ -111,8 +107,8 @@ def run(window, width, height):
                     ball.body.body_type = pymunk.Body.DYNAMIC
                     angle = calculate_angle(*line)
                     force = calculate_distance(*line) * 50
-                    fx = math.cos(angle) * force
-                    fy = math.sin(angle) * force
+                    fx = -math.cos(angle) * force
+                    fy = -math.sin(angle) * force
                     ball.body.apply_impulse_at_local_point((fx, fy), (0, 0))
                     pressed_pos = None
                 else:
@@ -124,7 +120,12 @@ def run(window, width, height):
         clock.tick(fps)
 
     pygame.quit()
+    sys.exit()
 
 
 if __name__ == '__main__':
+    pygame.init()
+
+    WIDTH, HEIGHT = 1000, 800
+    window = pygame.display.set_mode((WIDTH, HEIGHT))
     run(window, WIDTH, HEIGHT)
