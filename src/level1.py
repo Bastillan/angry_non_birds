@@ -9,13 +9,15 @@ class Level1(Level):
     def __init__(self, window: pygame.Surface) -> None:
         super().__init__(window)
         width, height = pygame.display.get_window_size()
-        self.create_boundries(width, height)
-        self.create_structure(width, height)
+        self.width = width
+        self.height = height
+        self.create_boundries()
+        self.create_structure()
         self.tries = 3
 
-    def create_boundries(self, width, height):
+    def create_boundries(self):
         rects = [
-            [(width/2, height-10), (width, 20)]
+            [(self.width/2, self.height-10), (self.width, 20)]
         ]
 
         for pos, size in rects:
@@ -26,10 +28,11 @@ class Level1(Level):
             shape.friction = 0.5
             self.space.add(body, shape)
 
-    def create_structure(self, width, height):
+    def create_structure(self):
         pass
 
-    def create_ball(self, pos, radius=20, mass=10):
+    def create_ball(self, radius=20, mass=10):
+        pos = (300, self.height-100)
         body = pymunk.Body(body_type=pymunk.Body.STATIC)
         body.position = pos
         shape = pymunk.Circle(body, radius)
@@ -62,7 +65,7 @@ class Level1(Level):
         if event.type == pygame.MOUSEBUTTONDOWN:
             if not self.ball:
                 self.pressed_pos = pygame.mouse.get_pos()
-                self.ball = self.create_ball(self.pressed_pos)
+                self.ball = self.create_ball()
             elif self.pressed_pos:
                 self.ball.body.body_type = pymunk.Body.DYNAMIC
                 angle = self.calculate_angle(*line)

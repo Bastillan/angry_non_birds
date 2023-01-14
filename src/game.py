@@ -7,7 +7,7 @@ from credits import Credits
 
 
 class Game:
-    def __init__(self, width=1000, height=800, fps=60) -> None:
+    def __init__(self, width=1500, height=800, fps=60) -> None:
         pygame.init()
         self.width = width
         self.height = height
@@ -44,12 +44,12 @@ class Game:
                         self.level = current_level.action(event, line)
                     else:
                         self.level = current_level.action(event)
-                if isinstance(current_level, Level):
-                    current_level.draw(line)
-                    current_level.space.step(self.dt)
-                else:
-                    current_level.draw()
-                clock.tick(self.fps)
+            if isinstance(current_level, Level):
+                current_level.draw(line)
+                current_level.space.step(self.dt)
+            else:
+                current_level.draw()
+            clock.tick(self.fps)
 
         pygame.quit()
         sys.exit()
