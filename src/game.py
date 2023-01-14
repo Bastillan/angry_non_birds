@@ -29,16 +29,26 @@ class Game:
         clock = pygame.time.Clock()
 
         while self.run:
+            current_level = self.levels[self.level]
+            if isinstance(current_level, Level):
+                line = None
+                if current_level.ball and current_level.pressed_pos:
+                    line = [current_level.pressed_pos, pygame.mouse.get_pos()]
+
             for event in pygame.event.get():
-                current_level = self.levels[self.level]
                 if event.type == pygame.QUIT:
                     self.run = False
                     break
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    self.level = current_level.action(event)
-                current_level.draw()
+                    if isinstance(current_level, Level):
+                        self.level = current_level.action(event, line)
+                    else:
+                        self.level = current_level.action(event)
                 if isinstance(current_level, Level):
+                    current_level.draw(line)
                     current_level.space.step(self.dt)
+                else:
+                    current_level.draw()
                 clock.tick(self.fps)
 
         pygame.quit()

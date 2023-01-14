@@ -10,12 +10,17 @@ class Level:
         self.draw_options = pymunk.pygame_util.DrawOptions(self.window)
         self.space = pymunk.Space()
         self.space.gravity = (0, 981)
+        self.pressed_pos = None
+        self.ball = None
+        self.tries = 1
 
     def draw(self):
         self.window.fill(self.wall_color)
         pygame.display.update()
 
-    def action(self, event: pygame.event.Event):
+    def action(self, event: pygame.event.Event, line):  # : list[tuple(int, int)]
         if event.type == pygame.MOUSEBUTTONDOWN:
-            return 'next_level'
+            if self.tries < 1:
+                return 'next_level'
+            self.tries -= 1
         return 'level'
