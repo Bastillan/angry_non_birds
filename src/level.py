@@ -25,8 +25,15 @@ class Level:
             pygame.draw.line(self.window, 'black', line[0], line[1], 3)
 
         self.space.debug_draw(self.draw_options)
+        self.show_tries()
 
         pygame.display.update()
+
+    def show_tries(self):
+        font = pygame.font.Font('freesansbold.ttf', 32)
+        text_pos = (10, 10)
+        tries = font.render(f'Tries left: {self.tries}', True, (120, 120, 120))
+        self.window.blit(tries, text_pos)
 
     def action(self, event: pygame.event.Event, line):  # : list[tuple(int, int)]
         if event.type == pygame.MOUSEBUTTONDOWN:
