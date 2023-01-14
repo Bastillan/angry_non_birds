@@ -26,7 +26,25 @@ class Level1(Level):
             self.space.add(body, shape)
 
     def create_structure(self):
-        pass
+        BROWN = (139, 69, 19, 100)
+        rects = [
+            [(self.width-300, self.height-50), (20, 100), BROWN, 50],
+            [(self.width-400, self.height-50), (20, 100), BROWN, 50],
+            [(self.width-500, self.height-50), (20, 100), BROWN, 50],
+            [(self.width-450, self.height-110), (100, 20), BROWN, 50],
+            [(self.width-350, self.height-110), (100, 20), BROWN, 50]
+
+        ]
+
+        for pos, size, color, mass in rects:
+            body = pymunk.Body()
+            body.position = pos
+            shape = pymunk.Poly.create_box(body, size, radius=1)
+            shape.color = color
+            shape.mass = mass
+            shape.elasticity = 0.4
+            shape.friction = 0.4
+            self.space.add(body, shape)
 
     def create_ball(self, radius=20, mass=10):
         pos = (300, self.height-200)
