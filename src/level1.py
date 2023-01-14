@@ -8,9 +8,6 @@ from level import Level
 class Level1(Level):
     def __init__(self, window: pygame.Surface) -> None:
         super().__init__(window)
-        width, height = pygame.display.get_window_size()
-        self.width = width
-        self.height = height
         self.create_boundries()
         self.create_structure()
         self.tries = 3
@@ -32,7 +29,7 @@ class Level1(Level):
         pass
 
     def create_ball(self, radius=20, mass=10):
-        pos = (300, self.height-100)
+        pos = (300, self.height-200)
         body = pymunk.Body(body_type=pymunk.Body.STATIC)
         body.position = pos
         shape = pymunk.Circle(body, radius)
@@ -64,16 +61,16 @@ class Level1(Level):
             return 'credits'
         if event.type == pygame.MOUSEBUTTONDOWN:
             if not self.ball:
-                self.pressed_pos = pygame.mouse.get_pos()
                 self.ball = self.create_ball()
-            elif self.pressed_pos:
+                self.start_ball_pos = self.ball.body.position
+            elif self.start_ball_pos:
                 self.ball.body.body_type = pymunk.Body.DYNAMIC
                 angle = self.calculate_angle(*line)
                 force = self.calculate_distance(*line) * 50
                 fx = -math.cos(angle) * force
                 fy = -math.sin(angle) * force
                 self.ball.body.apply_impulse_at_local_point((fx, fy), (0, 0))
-                self.pressed_pos = None
+                self.start_ball_pos = None
                 self.tries -= 1
             else:
                 self.space.remove(self.ball, self.ball.body)

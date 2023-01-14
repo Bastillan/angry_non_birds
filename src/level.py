@@ -7,10 +7,13 @@ class Level:
     def __init__(self, window: pygame.Surface) -> None:
         self.wall_color = 'white'
         self.window = window
+        width, height = pygame.display.get_window_size()
+        self.width = width
+        self.height = height
         self.draw_options = pymunk.pygame_util.DrawOptions(self.window)
         self.space = pymunk.Space()
         self.space.gravity = (0, 981)
-        self.pressed_pos = None
+        self.start_ball_pos = None
         self.ball = None
         self.tries = 1
 

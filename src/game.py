@@ -32,8 +32,8 @@ class Game:
             current_level = self.levels[self.level]
             if isinstance(current_level, Level):
                 line = None
-                if current_level.ball and current_level.pressed_pos:
-                    line = [current_level.pressed_pos, pygame.mouse.get_pos()]
+                if current_level.ball and current_level.start_ball_pos:
+                    line = [current_level.start_ball_pos, pygame.mouse.get_pos()]
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
