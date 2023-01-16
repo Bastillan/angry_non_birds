@@ -8,6 +8,7 @@ class Intro(GameStage):
         self.wall_color = 'blue'
 
     def action(self, event: pygame.event.Event):
-        if event.type == pygame.MOUSEBUTTONDOWN:
+        level = super().action(event)
+        if level == 'next_level':
             return 'level1'
         return 'intro'

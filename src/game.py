@@ -3,7 +3,8 @@ import sys
 from level import Level
 from intro import Intro
 from level1 import Level1
-from credits import Credits
+from creditsDefeat import CreditsDefeat
+from creditsVictory import CreditsVictory
 
 
 class Game:
@@ -18,11 +19,13 @@ class Game:
         self.run = True
         intro = Intro(self.window)
         level1 = Level1(self.window)
-        credits = Credits(self.window)
+        creditsDefeat = CreditsDefeat(self.window)
+        creditsVictory = CreditsVictory(self.window)
         self.levels = {
             'intro': intro,
             'level1': level1,
-            'credits': credits
+            'creditsDefeat': creditsDefeat,
+            'creditsVictory': creditsVictory
             }
 
     def play(self):

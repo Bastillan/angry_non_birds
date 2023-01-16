@@ -5,6 +5,9 @@ class GameStage:
     def __init__(self, window: pygame.Surface) -> None:
         self.wall_color = 'white'
         self.window = window
+        width, height = pygame.display.get_window_size()
+        self.width = width
+        self.height = height
 
     def draw(self):
         self.window.fill(self.wall_color)

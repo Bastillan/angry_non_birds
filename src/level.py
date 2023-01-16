@@ -2,21 +2,19 @@ import pygame
 import pymunk
 import pymunk.pygame_util
 import math
+from gameStage import GameStage
 
 
-class Level:
+class Level(GameStage):
     def __init__(self, window: pygame.Surface) -> None:
-        self.wall_color = 'white'
-        self.window = window
-        width, height = pygame.display.get_window_size()
-        self.width = width
-        self.height = height
+        super().__init__(window)
         self.draw_options = pymunk.pygame_util.DrawOptions(self.window)
         self.space = pymunk.Space()
         self.space.gravity = (0, 981)
         self.start_ball_pos = None
         self.ball = None
         self.tries = 1
+        self.number_of_targets = 0
 
     def draw(self, line):
         self.window.fill(self.wall_color)
@@ -35,12 +33,47 @@ class Level:
         tries = font.render(f'Tries left: {self.tries}', True, (120, 120, 120))
         self.window.blit(tries, text_pos)
 
-    def action(self, event: pygame.event.Event, line):  # : list[tuple(int, int)]
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if self.tries < 1:
+    def action(self, event: pygame.event.Event, line):
+        if self.tries < 1:
+            if self.number_of_targets < 1:
                 return 'next_level'
-            self.tries -= 1
+            elif self.tries < 1:
+                return 'creditsDefeat'
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if not self.ball:
+                pos = (300, self.height-200)
+                self.ball = self.create_ball(pos)
+                self.start_ball_pos = pos
+            elif self.start_ball_pos:
+                self.ball.body.body_type = pymunk.Body.DYNAMIC
+                angle = self.calculate_angle(*line)
+                force = self.calculate_distance(*line) * 50
+                fx = -math.cos(angle) * force
+                fy = -math.sin(angle) * force
+                self.ball.body.apply_impulse_at_local_point((fx, fy), (0, 0))
+                self.start_ball_pos = None
+                self.tries -= 1
+            else:
+                self.space.remove(self.ball, self.ball.body)
+                self.ball = None
+
+                if self.number_of_targets < 1:
+                    return 'next_level'
+                elif self.tries < 1:
+                    return 'creditsDefeat'
         return 'level'
+
+    def create_ball(self, pos, radius=20, mass=10):
+        body = pymunk.Body(body_type=pymunk.Body.STATIC)
+        body.position = pos
+        shape = pymunk.Circle(body, radius)
+        shape.mass = mass
+        shape.elasticity = 0.9
+        shape.friction = 0.4
+        shape.collision_type = 1
+        shape.color = (255, 0, 0, 100)
+        self.space.add(body, shape)
+        return shape
 
     def calculate_distance(self, p1, p2):
         return math.sqrt((p2[1]-p1[1])**2 + (p2[0]-p1[0])**2)
