@@ -1,10 +1,11 @@
 import pygame
 import sys
-from level import Level
-from intro import Intro
-from level1 import Level1
-from creditsDefeat import CreditsDefeat
-from creditsVictory import CreditsVictory
+from .level import Level
+from .intro import Intro
+from .level1 import Level1
+from .level2 import Level2
+from .creditsDefeat import CreditsDefeat
+from .creditsVictory import CreditsVictory
 
 
 class Game:
@@ -19,11 +20,13 @@ class Game:
         self.run = True
         intro = Intro(self.window)
         level1 = Level1(self.window)
+        level2 = Level2(self.window)
         creditsDefeat = CreditsDefeat(self.window)
         creditsVictory = CreditsVictory(self.window)
         self.levels = {
             'intro': intro,
             'level1': level1,
+            'level2': level2,
             'creditsDefeat': creditsDefeat,
             'creditsVictory': creditsVictory
             }

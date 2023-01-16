@@ -2,7 +2,7 @@ import pygame
 import pymunk
 import pymunk.pygame_util
 import math
-from gameStage import GameStage
+from .gameStage import GameStage
 
 
 class Level(GameStage):
@@ -41,10 +41,6 @@ class Level(GameStage):
         self.window.blit(tries, text_pos)
 
     def action(self, event: pygame.event.Event, line):
-        if len(self.space.bodies) <= self.number_of_bodies-self.number_of_targets:
-            return 'next_level'
-        elif self.tries < 1:
-            return 'creditsDefeat'
         if event.type == pygame.MOUSEBUTTONDOWN:
             if not self.ball:
                 pos = (300, self.height-200)
@@ -64,7 +60,6 @@ class Level(GameStage):
                 self.ball = None
 
                 self.deleting_outside()
-
                 if len(self.space.bodies) <= self.number_of_bodies-self.number_of_targets:
                     return 'next_level'
                 elif self.tries < 1:

@@ -1,5 +1,5 @@
 import pygame
-from gameStage import GameStage
+from .gameStage import GameStage
 
 
 class Intro(GameStage):

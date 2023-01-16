@@ -1,4 +1,4 @@
-from credits import Credits
+from .credits import Credits
 import pygame
 
 

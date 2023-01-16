@@ -1,6 +1,6 @@
 import pygame
 import sys
-from gameStage import GameStage
+from .gameStage import GameStage
 
 
 class Credits(GameStage):
