@@ -15,6 +15,13 @@ class Level(GameStage):
         self.ball = None
         self.tries = 1
         self.number_of_targets = 0
+        self.number_of_bodies = 0
+        handler_ball_target = self.space.add_collision_handler(1, 2)
+        handler_ball_target.post_solve = self.collide_ball_target
+        handler_target_structure = self.space.add_collision_handler(2, 3)
+        handler_target_structure.post_solve = self.collide_target_structure
+        handler_target_boundries = self.space.add_collision_handler(2, 4)
+        handler_target_boundries.post_solve = self.collide_target_boundries
 
     def draw(self, line):
         self.window.fill(self.wall_color)
@@ -34,11 +41,10 @@ class Level(GameStage):
         self.window.blit(tries, text_pos)
 
     def action(self, event: pygame.event.Event, line):
-        if self.tries < 1:
-            if self.number_of_targets < 1:
-                return 'next_level'
-            elif self.tries < 1:
-                return 'creditsDefeat'
+        if len(self.space.bodies) <= self.number_of_bodies-self.number_of_targets:
+            return 'next_level'
+        elif self.tries < 1:
+            return 'creditsDefeat'
         if event.type == pygame.MOUSEBUTTONDOWN:
             if not self.ball:
                 pos = (300, self.height-200)
@@ -57,11 +63,19 @@ class Level(GameStage):
                 self.space.remove(self.ball, self.ball.body)
                 self.ball = None
 
-                if self.number_of_targets < 1:
+                self.deleting_outside()
+
+                if len(self.space.bodies) <= self.number_of_bodies-self.number_of_targets:
                     return 'next_level'
                 elif self.tries < 1:
                     return 'creditsDefeat'
         return 'level'
+
+    def deleting_outside(self):
+        for shape in self.space.shapes:
+            x, y = shape.body.position
+            if x < 0 or y < 0 or x > self.width or y > self.height:
+                self.space.remove(shape, shape.body)
 
     def create_ball(self, pos, radius=20, mass=10):
         body = pymunk.Body(body_type=pymunk.Body.STATIC)
@@ -80,3 +94,17 @@ class Level(GameStage):
 
     def calculate_angle(self, p1, p2):
         return math.atan2(p2[1] - p1[1], p2[0] - p1[0])
+
+    def collide_ball_target(self, arbiter, space, data):
+        ball_shape, target_shape = arbiter.shapes
+        self.space.remove(target_shape, target_shape.body)
+
+    def collide_target_structure(self, arbiter, space, data):
+        target_shape, structure_shape = arbiter.shapes
+        if arbiter.total_ke > 1000000:
+            self.space.remove(target_shape, target_shape.body)
+
+    def collide_target_boundries(self, arbiter, space, data):
+        target_shape, boundries_shape = arbiter.shapes
+        if arbiter.total_ke > 1000000:
+            self.space.remove(target_shape, target_shape.body)
