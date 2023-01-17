@@ -1,5 +1,5 @@
-from .credits import Credits
 import pygame
+from src.credits import Credits
 
 
 class CreditsVictory(Credits):

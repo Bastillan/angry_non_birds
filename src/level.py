@@ -2,7 +2,7 @@ import pygame
 import pymunk
 import pymunk.pygame_util
 import math
-from .gameStage import GameStage
+from src.gameStage import GameStage
 
 
 class Level(GameStage):
@@ -16,6 +16,9 @@ class Level(GameStage):
         self.tries = 1
         self.number_of_targets = 0
         self.number_of_bodies = 0
+        self.setup_collision_handlers()
+
+    def setup_collision_handlers(self):
         handler_ball_target = self.space.add_collision_handler(1, 2)
         handler_ball_target.post_solve = self.collide_ball_target
         handler_target_structure = self.space.add_collision_handler(2, 3)
@@ -30,11 +33,11 @@ class Level(GameStage):
             pygame.draw.line(self.window, 'black', line[0], line[1], 3)
 
         self.space.debug_draw(self.draw_options)
-        self.show_tries()
+        self.show_number_of_tries()
 
         pygame.display.update()
 
-    def show_tries(self):
+    def show_number_of_tries(self):
         font = pygame.font.Font('freesansbold.ttf', 32)
         text_pos = (10, 10)
         tries = font.render(f'Tries left: {self.tries}', True, (120, 120, 120))
@@ -59,14 +62,16 @@ class Level(GameStage):
                 self.space.remove(self.ball, self.ball.body)
                 self.ball = None
 
-                self.deleting_outside()
-                if len(self.space.bodies) <= self.number_of_bodies-self.number_of_targets:
+                self.deleting_objects_outside()
+
+                without_targets = self.number_of_bodies-self.number_of_targets
+                if len(self.space.bodies) <= without_targets:
                     return 'next_level'
                 elif self.tries < 1:
                     return 'creditsDefeat'
         return 'level'
 
-    def deleting_outside(self):
+    def deleting_objects_outside(self):
         for shape in self.space.shapes:
             x, y = shape.body.position
             if x < 0 or y < 0 or x > self.width or y > self.height:

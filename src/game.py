@@ -1,11 +1,11 @@
 import pygame
 import sys
-from .level import Level
-from .intro import Intro
-from .level1 import Level1
-from .level2 import Level2
-from .creditsDefeat import CreditsDefeat
-from .creditsVictory import CreditsVictory
+from src.level import Level
+from src.intro import Intro
+from src.level1 import Level1
+from src.level2 import Level2
+from src.creditsDefeat import CreditsDefeat
+from src.creditsVictory import CreditsVictory
 
 
 class Game:
@@ -39,7 +39,8 @@ class Game:
             if isinstance(current_level, Level):
                 line = None
                 if current_level.ball and current_level.start_ball_pos:
-                    line = [current_level.start_ball_pos, pygame.mouse.get_pos()]
+                    mouse_pos = pygame.mouse.get_pos()
+                    line = [current_level.start_ball_pos, mouse_pos]
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -50,6 +51,7 @@ class Game:
                         self.level = current_level.action(event, line)
                     else:
                         self.level = current_level.action(event)
+
             if isinstance(current_level, Level):
                 current_level.draw(line)
                 current_level.space.step(self.dt)

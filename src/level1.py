@@ -1,6 +1,6 @@
 import pygame
 import pymunk
-from .level import Level
+from src.level import Level
 
 
 class Level1(Level):
@@ -12,6 +12,7 @@ class Level1(Level):
         self.tries = 3
 
     def create_boundries(self):
+        GREY = (70, 75, 92, 100)
         rects = [
             [(self.width/2, self.height-10), (self.width, 20)]
         ]
@@ -22,6 +23,7 @@ class Level1(Level):
             body = pymunk.Body(body_type=pymunk.Body.STATIC)
             body.position = pos
             shape = pymunk.Poly.create_box(body, size)
+            shape.color = GREY
             shape.elasticity = 0.4
             shape.friction = 0.5
             shape.collision_type = 4
