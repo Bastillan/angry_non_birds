@@ -3,6 +3,7 @@ import pymunk
 import pymunk.pygame_util
 import math
 from src.gameStage import GameStage
+from src.ball import Ball
 
 
 class Level(GameStage):
@@ -59,7 +60,7 @@ class Level(GameStage):
                 self.start_ball_pos = None
                 self.tries -= 1
             else:
-                self.space.remove(self.ball, self.ball.body)
+                self.ball.remove_from_space(self.space)
                 self.ball = None
 
                 self._deleting_objects_outside()
@@ -78,16 +79,10 @@ class Level(GameStage):
                 self.space.remove(shape, shape.body)
 
     def create_ball(self, pos, radius=20, mass=10):
-        body = pymunk.Body(body_type=pymunk.Body.STATIC)
-        body.position = pos
-        shape = pymunk.Circle(body, radius)
-        shape.mass = mass
-        shape.elasticity = 0.9
-        shape.friction = 0.4
-        shape.collision_type = 1
-        shape.color = (255, 0, 0, 100)
-        self.space.add(body, shape)
-        return shape
+        RED = (250, 0, 0, 100)
+        ball = Ball(pos, radius, RED, mass)
+        ball.add_to_space(self.space)
+        return ball
 
     def _calculate_distance(self, p1, p2):
         return math.sqrt((p2[1]-p1[1])**2 + (p2[0]-p1[0])**2)
