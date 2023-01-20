@@ -4,10 +4,10 @@ from src.gameStage import GameStage
 
 
 class Credits(GameStage):
-    def __init__(self, window: pygame.Surface) -> None:
+    def __init__(self, window: pygame.Surface, text='Credits') -> None:
         super().__init__(window)
         self.wall_color = 'red'
-        self.text = 'Credits'
+        self.text = text
 
     def draw(self):
         self.window.fill(self.wall_color)

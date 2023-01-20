@@ -5,8 +5,7 @@ from src.intro import Intro
 from src.level1 import Level1
 from src.level2 import Level2
 from src.level3 import Level3
-from src.creditsDefeat import CreditsDefeat
-from src.creditsVictory import CreditsVictory
+from src.credits import Credits
 
 
 class Game:
@@ -23,8 +22,8 @@ class Game:
         level1 = Level1(self.window)
         level2 = Level2(self.window)
         level3 = Level3(self.window)
-        creditsDefeat = CreditsDefeat(self.window)
-        creditsVictory = CreditsVictory(self.window)
+        creditsDefeat = Credits(self.window, 'Defeat')
+        creditsVictory = Credits(self.window, 'Victory')
         self.levels = {
             'intro': intro,
             'level1': level1,
