@@ -1,4 +1,5 @@
 import pygame
+
 from src.level import Level
 from src.boundary import Boundary
 from src.structure import Structure
