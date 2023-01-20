@@ -12,7 +12,22 @@ class BallMassError(Exception):
 
 
 class Ball:
+    """
+    Class Ball.
+    Contains attributes:
+
+    :param body: ball's simulation body
+    :type body: pymunk.Body
+
+    :param shape: ball's simulation shape
+    :type shape: pymunk.Circle
+    """
     def __init__(self, pos, radius, color, mass) -> None:
+        """
+        Creates instance of the Ball.
+        Raises BallRadiusError if radius is not positive.
+        Raises BallMassError if mass is not positive.
+        """
         if radius <= 0:
             raise BallRadiusError
         if mass <= 0:
@@ -27,16 +42,20 @@ class Ball:
         self._shape.friction = 0.4
         self._shape.collision_type = 1
 
-    def add_to_space(self, space: pymunk.Space):
+    def add_to_space(self, space: pymunk.Space) -> None:
+        """Adds ball's body and shape to simulation's space."""
         space.add(self.body, self.shape)
 
-    def remove_from_space(self, space: pymunk.Space):
+    def remove_from_space(self, space: pymunk.Space) -> None:
+        """Removes ball's body and shape from simulation's space."""
         space.remove(self.body, self.shape)
 
     @property
     def body(self) -> pymunk.Body:
+        """Returns ball's body."""
         return self._body
 
     @property
     def shape(self) -> pymunk.Circle:
+        """Returns ball's shape."""
         return self._shape
