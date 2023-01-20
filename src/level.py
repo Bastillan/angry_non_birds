@@ -7,7 +7,34 @@ from src.ball import Ball
 
 
 class Level(GameStage):
+    """
+    Class Level.
+    Inherits after GameStage.
+    Contains additional attributes:
+
+    :param draw_options: draw options for displaying pymunk simulation
+    :type draw_options: pymunk.pygame_util.DrawOptions
+
+    :param space: simulation's space
+    :type space: pymunk.Space
+
+    :param start_ball_pos: starting ball's position
+    :type start_ball_pos: tuple(int, int)
+
+    :param ball: ball
+    :type ball: Ball
+
+    :param tries: number of tries
+    :type tries: int
+
+    :param number_of_targets: number of targets to hit
+    :type number_of_targets: int
+
+    :param number_of_bodies: number of all objects in a simulation
+    :type number_of_bodies: int
+    """
     def __init__(self, window: pygame.Surface) -> None:
+        """Creates instance of the Level."""
         super().__init__(window)
         self.draw_options = pymunk.pygame_util.DrawOptions(self.window)
         self.space = pymunk.Space()
@@ -19,7 +46,8 @@ class Level(GameStage):
         self.number_of_bodies = 0
         self._setup_collision_handlers()
 
-    def _setup_collision_handlers(self):
+    def _setup_collision_handlers(self) -> None:
+        """Setups collision handlers."""
         handler_ball_target = self.space.add_collision_handler(1, 2)
         handler_ball_target.post_solve = self.collide_ball_target
         handler_target_structure = self.space.add_collision_handler(2, 3)
@@ -27,7 +55,8 @@ class Level(GameStage):
         handler_target_boundries = self.space.add_collision_handler(2, 4)
         handler_target_boundries.post_solve = self.collide_target_boundries
 
-    def draw(self, line):
+    def draw(self, line) -> None:
+        """Displays current Level simulation stage on window."""
         self.window.fill(self.wall_color)
 
         if line:
@@ -38,13 +67,24 @@ class Level(GameStage):
 
         pygame.display.update()
 
-    def _show_number_of_tries(self):
+    def _show_number_of_tries(self) -> None:
+        """Displays number of tries left."""
         font = pygame.font.Font(None, 60)
         text_pos = (10, 10)
         tries = font.render(f'Tries left: {self.tries}', True, (120, 120, 120))
         self.window.blit(tries, text_pos)
 
-    def action(self, event: pygame.event.Event, line):
+    def action(self, event: pygame.event.Event, line) -> str:
+        """
+        Handles events.
+        When mouse is clicked, creates ball.
+        When mouse is clicked again throws the ball.
+        When mouse is clicked once again deletes the ball
+        and all objects outside of window borders.
+        During level returns 'level'.
+        If level is completed returns 'next_level'
+        else if player lost, returns 'creditsDefeat.
+        """
         if event.type == pygame.MOUSEBUTTONDOWN:
             if not self.ball:
                 pos = (300, self.height-200)
@@ -72,34 +112,43 @@ class Level(GameStage):
                     return 'creditsDefeat'
         return 'level'
 
-    def _deleting_objects_outside(self):
+    def _deleting_objects_outside(self) -> None:
+        """
+        Deletes from the simulation all objects outside of window borders.
+        """
         for shape in self.space.shapes:
             x, y = shape.body.position
             if x < 0 or y < 0 or x > self.width or y > self.height:
                 self.space.remove(shape, shape.body)
 
-    def create_ball(self, pos, radius=20, mass=10):
+    def create_ball(self, pos, radius=20, mass=10) -> Ball:
+        """Creates ball."""
         RED = (250, 0, 0, 100)
         ball = Ball(pos, radius, RED, mass)
         ball.add_to_space(self.space)
         return ball
 
-    def _calculate_distance(self, p1, p2):
+    def _calculate_distance(self, p1, p2) -> float:
+        """Calculates distance between user's mouse and the ball."""
         return math.sqrt((p2[1]-p1[1])**2 + (p2[0]-p1[0])**2)
 
-    def _calculate_angle(self, p1, p2):
+    def _calculate_angle(self, p1, p2) -> float:
+        """Calculates angle of the throw."""
         return math.atan2(p2[1] - p1[1], p2[0] - p1[0])
 
-    def collide_ball_target(self, arbiter, space, data):
+    def collide_ball_target(self, arbiter, space, data) -> None:
+        """Handles collision between ball and target."""
         ball_shape, target_shape = arbiter.shapes
         self.space.remove(target_shape, target_shape.body)
 
-    def collide_target_structure(self, arbiter, space, data):
+    def collide_target_structure(self, arbiter, space, data) -> None:
+        """Handles collision between target and structure."""
         target_shape, structure_shape = arbiter.shapes
         if arbiter.total_ke > 1000000:
             self.space.remove(target_shape, target_shape.body)
 
-    def collide_target_boundries(self, arbiter, space, data):
+    def collide_target_boundries(self, arbiter, space, data) -> None:
+        """Handles collision between target and boundries."""
         target_shape, boundries_shape = arbiter.shapes
         if arbiter.total_ke > 1000000:
             self.space.remove(target_shape, target_shape.body)
