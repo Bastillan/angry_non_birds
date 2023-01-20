@@ -18,7 +18,7 @@ class Level(GameStage):
     :param space: simulation's space
     :type space: pymunk.Space
 
-    :param start_ball_pos: starting ball's position
+    :param start_ball_pos: ball's starting position
     :type start_ball_pos: tuple(int, int)
 
     :param ball: ball
@@ -36,14 +36,14 @@ class Level(GameStage):
     def __init__(self, window: pygame.Surface) -> None:
         """Creates instance of the Level."""
         super().__init__(window)
-        self.draw_options = pymunk.pygame_util.DrawOptions(self.window)
-        self.space = pymunk.Space()
-        self.space.gravity = (0, 981)
-        self.start_ball_pos = None
-        self.ball = None
-        self.tries = 1
-        self.number_of_targets = 0
-        self.number_of_bodies = 0
+        self._draw_options = pymunk.pygame_util.DrawOptions(self.window)
+        self._space = pymunk.Space()
+        self._space.gravity = (0, 981)
+        self._start_ball_pos = None
+        self._ball = None
+        self._tries = 1
+        self._number_of_targets = 0
+        self._number_of_bodies = 0
         self._setup_collision_handlers()
 
     def _setup_collision_handlers(self) -> None:
@@ -88,8 +88,8 @@ class Level(GameStage):
         if event.type == pygame.MOUSEBUTTONDOWN:
             if not self.ball:
                 pos = (300, self.height-200)
-                self.ball = self.create_ball(pos)
-                self.start_ball_pos = pos
+                self._ball = self.create_ball(pos)
+                self._start_ball_pos = pos
             elif self.start_ball_pos:
                 self.ball.body.body_type = pymunk.Body.DYNAMIC
                 angle = self._calculate_angle(*line)
@@ -97,11 +97,11 @@ class Level(GameStage):
                 fx = -math.cos(angle) * force
                 fy = -math.sin(angle) * force
                 self.ball.body.apply_impulse_at_local_point((fx, fy), (0, 0))
-                self.start_ball_pos = None
-                self.tries -= 1
+                self._start_ball_pos = None
+                self._tries -= 1
             else:
                 self.ball.remove_from_space(self.space)
-                self.ball = None
+                self._ball = None
 
                 self._deleting_objects_outside()
 
@@ -152,3 +152,38 @@ class Level(GameStage):
         target_shape, boundries_shape = arbiter.shapes
         if arbiter.total_ke > 1000000:
             self.space.remove(target_shape, target_shape.body)
+
+    @property
+    def draw_options(self) -> pymunk.pygame_util.DrawOptions:
+        """Returns draw options."""
+        return self._draw_options
+
+    @property
+    def space(self) -> pymunk.Space:
+        """Returns space."""
+        return self._space
+
+    @property
+    def start_ball_pos(self):
+        """Returns ball's starting position."""
+        return self._start_ball_pos
+
+    @property
+    def ball(self) -> Ball:
+        """Returns ball."""
+        return self._ball
+
+    @property
+    def tries(self) -> int:
+        """Returns number of tries."""
+        return self._tries
+
+    @property
+    def number_of_targets(self) -> int:
+        """Returns number of targets."""
+        return self._number_of_targets
+
+    @property
+    def number_of_bodies(self) -> int:
+        """Returns number of bodies."""
+        return self._number_of_bodies
