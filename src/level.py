@@ -16,9 +16,9 @@ class Level(GameStage):
         self.tries = 1
         self.number_of_targets = 0
         self.number_of_bodies = 0
-        self.setup_collision_handlers()
+        self._setup_collision_handlers()
 
-    def setup_collision_handlers(self):
+    def _setup_collision_handlers(self):
         handler_ball_target = self.space.add_collision_handler(1, 2)
         handler_ball_target.post_solve = self.collide_ball_target
         handler_target_structure = self.space.add_collision_handler(2, 3)
@@ -33,11 +33,11 @@ class Level(GameStage):
             pygame.draw.line(self.window, 'black', line[0], line[1], 3)
 
         self.space.debug_draw(self.draw_options)
-        self.show_number_of_tries()
+        self._show_number_of_tries()
 
         pygame.display.update()
 
-    def show_number_of_tries(self):
+    def _show_number_of_tries(self):
         font = pygame.font.Font(None, 60)
         text_pos = (10, 10)
         tries = font.render(f'Tries left: {self.tries}', True, (120, 120, 120))
@@ -51,8 +51,8 @@ class Level(GameStage):
                 self.start_ball_pos = pos
             elif self.start_ball_pos:
                 self.ball.body.body_type = pymunk.Body.DYNAMIC
-                angle = self.calculate_angle(*line)
-                force = self.calculate_distance(*line) * 50
+                angle = self._calculate_angle(*line)
+                force = self._calculate_distance(*line) * 50
                 fx = -math.cos(angle) * force
                 fy = -math.sin(angle) * force
                 self.ball.body.apply_impulse_at_local_point((fx, fy), (0, 0))
@@ -62,7 +62,7 @@ class Level(GameStage):
                 self.space.remove(self.ball, self.ball.body)
                 self.ball = None
 
-                self.deleting_objects_outside()
+                self._deleting_objects_outside()
 
                 without_targets = self.number_of_bodies-self.number_of_targets
                 if len(self.space.bodies) <= without_targets:
@@ -71,7 +71,7 @@ class Level(GameStage):
                     return 'creditsDefeat'
         return 'level'
 
-    def deleting_objects_outside(self):
+    def _deleting_objects_outside(self):
         for shape in self.space.shapes:
             x, y = shape.body.position
             if x < 0 or y < 0 or x > self.width or y > self.height:
@@ -89,10 +89,10 @@ class Level(GameStage):
         self.space.add(body, shape)
         return shape
 
-    def calculate_distance(self, p1, p2):
+    def _calculate_distance(self, p1, p2):
         return math.sqrt((p2[1]-p1[1])**2 + (p2[0]-p1[0])**2)
 
-    def calculate_angle(self, p1, p2):
+    def _calculate_angle(self, p1, p2):
         return math.atan2(p2[1] - p1[1], p2[0] - p1[0])
 
     def collide_ball_target(self, arbiter, space, data):

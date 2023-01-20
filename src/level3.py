@@ -1,34 +1,30 @@
 import pygame
-import pymunk
 from src.level import Level
+from src.boundary import Boundary
+from src.structure import Structure
+from src.target import Target
 
 
 class Level3(Level):
     def __init__(self, window: pygame.Surface) -> None:
         super().__init__(window)
-        self.create_boundries()
+        self.create_boundaries()
         self.create_structure()
         self.create_targets()
         self.tries = 2
 
-    def create_boundries(self):
+    def create_boundaries(self):
         GREY = (70, 75, 92, 100)
         rects = [
-            [(self.width/2, self.height-10), (self.width, 20)],
-            [(self.width-700, self.height-200), (200, 20)]
+            [(self.width/2, self.height-10), (self.width, 20), GREY],
+            [(self.width-700, self.height-200), (200, 20), GREY]
         ]
 
         self.number_of_bodies += len(rects)
 
-        for pos, size in rects:
-            body = pymunk.Body(body_type=pymunk.Body.STATIC)
-            body.position = pos
-            shape = pymunk.Poly.create_box(body, size)
-            shape.color = GREY
-            shape.elasticity = 0.4
-            shape.friction = 0.5
-            shape.collision_type = 4
-            self.space.add(body, shape)
+        for pos, size, color in rects:
+            boundary = Boundary(pos, size, color)
+            boundary.add_to_space(self.space)
 
     def create_structure(self):
         BROWN = (139, 69, 19, 100)
@@ -47,15 +43,8 @@ class Level3(Level):
         self.number_of_bodies += len(rects)
 
         for pos, size, color, mass in rects:
-            body = pymunk.Body()
-            body.position = pos
-            shape = pymunk.Poly.create_box(body, size, radius=1)
-            shape.color = color
-            shape.mass = mass
-            shape.elasticity = 0.4
-            shape.friction = 0.4
-            shape.collision_type = 3
-            self.space.add(body, shape)
+            structure = Structure(pos, size, color, mass)
+            structure.add_to_space(self.space)
 
     def create_targets(self):
         GREEN = (35, 118, 0, 100)
@@ -70,15 +59,8 @@ class Level3(Level):
         self.number_of_targets = len(targs)
 
         for pos, radius, color, mass in targs:
-            body = pymunk.Body()
-            body.position = pos
-            shape = pymunk.Circle(body, radius)
-            shape.color = color
-            shape.mass = mass
-            shape.elasticity = 0.4
-            shape.friction = 0.4
-            shape.collision_type = 2
-            self.space.add(body, shape)
+            target = Target(pos, radius, color, mass)
+            target.add_to_space(self.space)
 
     def action(self, event: pygame.event.Event, line):
         level = super().action(event, line)

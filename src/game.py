@@ -18,6 +18,9 @@ class Game:
         self.dt = 1 / self.fps
         self.level = 'intro'
         self.run = True
+        self._prepare_levels()
+
+    def _prepare_levels(self):
         intro = Intro(self.window)
         level1 = Level1(self.window)
         level2 = Level2(self.window)
