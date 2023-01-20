@@ -38,7 +38,7 @@ class Level(GameStage):
         pygame.display.update()
 
     def show_number_of_tries(self):
-        font = pygame.font.Font('freesansbold.ttf', 32)
+        font = pygame.font.Font(None, 60)
         text_pos = (10, 10)
         tries = font.render(f'Tries left: {self.tries}', True, (120, 120, 120))
         self.window.blit(tries, text_pos)

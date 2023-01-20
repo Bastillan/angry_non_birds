@@ -15,10 +15,10 @@ class Credits(GameStage):
         pygame.display.update()
 
     def display_text(self):
-        font = pygame.font.Font('freesansbold.ttf', 32)
-        text_pos = (self.width/2, self.height/2)
-        tries = font.render(f'{self.text}', True, (120, 120, 120))
-        self.window.blit(tries, text_pos)
+        font = pygame.font.Font(None, 60)
+        text = font.render(f'{self.text}', True, (38, 46, 162))
+        text_rect = text.get_rect(center=self.window.get_rect().center)
+        self.window.blit(text, text_rect)
 
     def action(self, event: pygame.event.Event):
         if event.type == pygame.MOUSEBUTTONDOWN:
