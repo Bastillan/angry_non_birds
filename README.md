@@ -5,7 +5,7 @@ Simple clone of *Angry Birds* game.
 
 Written in `Python` using `Pygame` and `Pymunk`.
 
-It was written in the first semester as a project for the course *Basics of computer science and programming (PIPR)* at the Warsaw University of Technology.
+It was written in the first semester (2022Z) as a project for the course *Basics of computer science and programming (PIPR)* at the Warsaw University of Technology.
 
 ## Getting started
 1. Clone the repository
